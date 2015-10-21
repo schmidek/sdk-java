@@ -23,6 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 /**
  * Helper methods for http calls
@@ -60,6 +63,11 @@ public final class HttpUtility {
 			  logger.debug(String.format("Posting request to Url: '%s'", postUrl));
 			  httpPost = new HttpPost(postUrl);
 			  httpPost.setHeader("Content-Type", "text/xml; charset=utf-8");
+			  httpPost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
+			  HttpParams params = httpPost.getParams().copy();
+				HttpConnectionParams.setConnectionTimeout(params, 30000);
+				HttpConnectionParams.setSoTimeout(params, 60000);
+				httpPost.setParams(params);
 			  
 			  String xmlRequest = XmlUtility.getXml(request);
 			  logger.debug(String.format("Request: '%s%s%s'", LogHelper.LineSeparator, xmlRequest, LogHelper.LineSeparator));

@@ -24,6 +24,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
 /**
@@ -69,6 +72,10 @@ public class HttpClient {
 
   		    httpPost = new HttpPost(postUrl);
 		    httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+		    HttpParams params = httpPost.getParams().copy();
+		    HttpConnectionParams.setConnectionTimeout(params, 30000);
+		    HttpConnectionParams.setSoTimeout(params, 60000);
+		    httpPost.setParams(params);
 		    httpPost.setEntity(new StringEntity(transaction.toNVPString()));
 		} else if (transaction instanceof net.authorize.arb.Transaction ||
 			    transaction instanceof net.authorize.cim.Transaction ||
@@ -76,6 +83,10 @@ public class HttpClient {
 
 			  postUrl = new URI(env.getXmlBaseUrl() + "/xml/v1/request.api");
 			  httpPost = new HttpPost(postUrl);
+			  HttpParams params = httpPost.getParams().copy();
+			  HttpConnectionParams.setConnectionTimeout(params, 30000);
+			  HttpConnectionParams.setSoTimeout(params, 60000);
+			  httpPost.setParams(params);
 			  httpPost.setHeader("Content-Type", "text/xml; charset=utf-8");
 			  httpPost.setEntity(new StringEntity(transaction.toXMLString()));
 		}
@@ -122,6 +133,11 @@ public class HttpClient {
 		if(environment != null && transaction != null) {
 			try {
 				DefaultHttpClient httpClient = new DefaultHttpClient();
+				HttpParams params = httpClient.getParams().copy();
+				HttpConnectionParams.setConnectionTimeout(params, 30000);
+				HttpConnectionParams.setSoTimeout(params, 60000);
+				httpClient.setParams(params);
+				httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 
 				setProxyIfRequested(httpClient);
 
@@ -212,6 +228,11 @@ public class HttpClient {
 		if(environment != null && transaction != null) {
 			try {
 				DefaultHttpClient httpClient = new DefaultHttpClient();
+				HttpParams params = httpClient.getParams().copy();
+				HttpConnectionParams.setConnectionTimeout(params, 30000);
+				HttpConnectionParams.setSoTimeout(params, 60000);
+				httpClient.setParams(params);
+				httpClient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 
 				setProxyIfRequested(httpClient);
 				

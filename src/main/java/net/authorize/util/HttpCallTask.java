@@ -22,7 +22,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
 //import net.authorize.api.controller.base.ErrorResponse;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 /**
  * Callable task to make http calls in future 
@@ -68,6 +71,11 @@ public class HttpCallTask implements Callable<ANetApiResponse> {
         try {
             HttpPost httppost = HttpUtility.createPostRequest(this.env, this.request);
             httpCaller = new DefaultHttpClient();
+            HttpParams params = httpCaller.getParams().copy();
+			HttpConnectionParams.setConnectionTimeout(params, 30000);
+			HttpConnectionParams.setSoTimeout(params, 60000);
+			httpCaller.setParams(params);
+			httpCaller.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 			HttpClient.setProxyIfRequested(httpCaller);
             HttpResponse httpResponse = httpCaller.execute(httppost);
 
